@@ -67,12 +67,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 	        if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 0.5f;
 #endif
 
+            Debug.LogError(m_Move);
             // pass all parameters to the character control script
             m_Character.Move(m_Move, crouch, m_Jump);
             m_Jump = false;
 
-
-            this.m_Character.DebugVelocity();
         }
     }
 }

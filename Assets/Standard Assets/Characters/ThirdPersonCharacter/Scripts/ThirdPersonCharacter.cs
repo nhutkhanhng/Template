@@ -43,10 +43,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_OrigGroundCheckDistance = m_GroundCheckDistance;
 		}
 
-        public void DebugVelocity()
-        {
-            Debug.LogError(m_Rigidbody.velocity);
-        }
 		public void Move(Vector3 move, bool crouch, bool jump)
 		{
 
@@ -58,6 +54,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			CheckGroundStatus();
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
 			m_TurnAmount = Mathf.Atan2(move.x, move.z);
+
+            Debug.Log(move);
 			m_ForwardAmount = move.z;
 
 			ApplyExtraTurnRotation();
@@ -191,24 +189,24 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		}
 
 
-		public void OnAnimatorMove()
-		{
-			// we implement this function to override the default root motion.
-			// this allows us to modify the positional speed before it's applied.
-			if (m_IsGrounded && Time.deltaTime > 0)
-			{
-				Vector3 v = (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
+        public void OnAnimatorMove()
+        {
+            // we implement this function to override the default root motion.
+            // this allows us to modify the positional speed before it's applied.
+            if (m_IsGrounded && Time.deltaTime > 0)
+            {
+                Vector3 v = (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
 
-				// we preserve the existing y part of the current velocity.
-				v.y = m_Rigidbody.velocity.y;
+                // we preserve the existing y part of the current velocity.
+                v.y = m_Rigidbody.velocity.y;
 
                 Debug.Log(v);
-				m_Rigidbody.velocity = v;
-			}
-		}
+                m_Rigidbody.velocity = v;
+            }
+        }
 
 
-		void CheckGroundStatus()
+        void CheckGroundStatus()
 		{
 			RaycastHit hitInfo;
 #if UNITY_EDITOR
