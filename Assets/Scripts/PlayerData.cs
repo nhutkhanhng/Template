@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(menuName = "ScriptableObjects/PlayerData")]
+[CreateAssetMenu(menuName = "ScriptableObject/PlayerData")]
 public class PlayerData : SingletonScriptableOBject<PlayerData>
 {
     public int maximumPlayerHealth;

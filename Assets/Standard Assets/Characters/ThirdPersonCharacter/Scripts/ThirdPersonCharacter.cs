@@ -16,6 +16,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		[SerializeField] float m_AnimSpeedMultiplier = 1f;
 		[SerializeField] float m_GroundCheckDistance = 0.1f;
 
+        public float GroundCheckDisTance { get { return m_GroundCheckDistance + m_Capsule.center.y; } }
 		Rigidbody m_Rigidbody;
 		Animator m_Animator;
 		bool m_IsGrounded;
@@ -29,7 +30,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		CapsuleCollider m_Capsule;
 		bool m_Crouching;
 
-
+        
 		void Start()
 		{
 			m_Animator = GetComponent<Animator>();
@@ -42,7 +43,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_OrigGroundCheckDistance = m_GroundCheckDistance;
 		}
 
-
+        public void DebugVelocity()
+        {
+            Debug.LogError(m_Rigidbody.velocity);
+        }
 		public void Move(Vector3 move, bool crouch, bool jump)
 		{
 
@@ -134,6 +138,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				Mathf.Repeat(
 					m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime + m_RunCycleLegOffset, 1);
 			float jumpLeg = (runCycle < k_Half ? 1 : -1) * m_ForwardAmount;
+
+            //Debug.Log(m_IsGrounded);
+
 			if (m_IsGrounded)
 			{
 				m_Animator.SetFloat("JumpLeg", jumpLeg);
@@ -168,7 +175,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			// check whether conditions are right to allow a jump:
 			if (jump && !crouch && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
 			{
-				// jump!
+                // jump!
 				m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, m_JumpPower, m_Rigidbody.velocity.z);
 				m_IsGrounded = false;
 				m_Animator.applyRootMotion = false;
@@ -194,6 +201,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 				// we preserve the existing y part of the current velocity.
 				v.y = m_Rigidbody.velocity.y;
+
+                Debug.Log(v);
 				m_Rigidbody.velocity = v;
 			}
 		}
@@ -204,11 +213,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			RaycastHit hitInfo;
 #if UNITY_EDITOR
 			// helper to visualise the ground check ray in the scene view
-			Debug.DrawLine(transform.position + (Vector3.up * 0.1f), transform.position + (Vector3.up * 0.1f) + (Vector3.down * m_GroundCheckDistance));
+			Debug.DrawLine(transform.position + (Vector3.up * 0.1f), transform.position + (Vector3.up * 0.1f) + m_Capsule.center + (Vector3.down * GroundCheckDisTance));
 #endif
 			// 0.1f is a small offset to start the ray from inside the character
 			// it is also good to note that the transform position in the sample assets is at the base of the character
-			if (Physics.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, m_GroundCheckDistance))
+			if (Physics.Raycast(transform.position + (Vector3.up * 0.1f) , Vector3.down, out hitInfo, GroundCheckDisTance))
 			{
 				m_GroundNormal = hitInfo.normal;
 				m_IsGrounded = true;

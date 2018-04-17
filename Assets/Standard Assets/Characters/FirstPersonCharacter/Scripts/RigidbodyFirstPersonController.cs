@@ -183,6 +183,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     StickToGroundHelper();
                 }
             }
+
+            Debug.LogError(this.m_IsGrounded);
             m_Jump = false;
         }
 
@@ -260,6 +262,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 m_Jumping = false;
             }
+
+            Debug.LogError(m_IsGrounded);
         }
     }
 }

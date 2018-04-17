@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class ScreenFader : SingletonMono<ScreenFader>
 {
@@ -17,7 +18,7 @@ public class ScreenFader : SingletonMono<ScreenFader>
     {
         Black, Loading, GameOver,
     }
-
+    
 
     public static bool IsFading
     {
