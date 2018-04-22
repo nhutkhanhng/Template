@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
@@ -30,6 +30,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		CapsuleCollider m_Capsule;
 		bool m_Crouching;
 
+
+        public Transform OffSetRoataion;
         
 		void Start()
 		{
@@ -53,9 +55,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			move = transform.InverseTransformDirection(move);
 			CheckGroundStatus();
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
+
+            m_OldTurnAmount = m_TurnAmount;
 			m_TurnAmount = Mathf.Atan2(move.x, move.z);
 
-            Debug.Log(move);
 			m_ForwardAmount = move.z;
 
 			ApplyExtraTurnRotation();
@@ -117,11 +120,15 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		}
 
 
+
+        private float m_OldTurnAmount;
 		void UpdateAnimator(Vector3 move)
 		{
 			// update the animator parameters
 			m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
-			m_Animator.SetFloat("Turn", m_TurnAmount, 0.1f, Time.deltaTime);
+
+		    m_Animator.SetFloat("Turn", m_TurnAmount, 0.15f, Time.deltaTime);
+
 			m_Animator.SetBool("Crouch", m_Crouching);
 			m_Animator.SetBool("OnGround", m_IsGrounded);
 			if (!m_IsGrounded)
@@ -185,9 +192,21 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		{
 			// help the character turn faster (this is in addition to root rotation in the animation)
 			float turnSpeed = Mathf.Lerp(m_StationaryTurnSpeed, m_MovingTurnSpeed, m_ForwardAmount);
-			transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
-		}
 
+            Vector3 dir = OffSetRoataion.position - transform.position;
+
+
+            float angleOffset = Vector3.Angle(OffSetRoataion.forward, this.transform.forward);
+
+            
+            float radianOffset = angleOffset * Mathf.Deg2Rad;
+
+            Debug.LogWarning(angleOffset);
+            Debug.LogError(radianOffset);
+
+            //if (Mathf.Abs(m_TurnAmount) - Mathf.Abs(radianOffset) <= 0.8f)
+            //    transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
+		}
 
         public void OnAnimatorMove()
         {
@@ -196,11 +215,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             if (m_IsGrounded && Time.deltaTime > 0)
             {
                 Vector3 v = (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
-
                 // we preserve the existing y part of the current velocity.
+
                 v.y = m_Rigidbody.velocity.y;
 
-                Debug.Log(v);
                 m_Rigidbody.velocity = v;
             }
         }
@@ -228,5 +246,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				m_Animator.applyRootMotion = false;
 			}
 		}
+
+
+        public void UpdateAniamtionAttack(bool attack)
+        {
+            this.m_Animator.SetBool("Attack", attack);
+        }
 	}
 }

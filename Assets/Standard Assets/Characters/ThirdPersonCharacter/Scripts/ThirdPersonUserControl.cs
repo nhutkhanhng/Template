@@ -13,7 +13,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         private Vector3 m_Move;
         private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 
-        
+
+        public KeyCode attack;
+
         private void Start()
         {
             // get the transform of the main camera
@@ -66,12 +68,21 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			// walk speed multiplier
 	        if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 0.5f;
 #endif
-
-            Debug.LogError(m_Move);
             // pass all parameters to the character control script
+
             m_Character.Move(m_Move, crouch, m_Jump);
             m_Jump = false;
 
+
+            if (Input.GetKey(attack))
+            {
+                m_Character.UpdateAniamtionAttack(true);
+            }
+
+            if (Input.GetKeyUp(attack))
+            {
+                m_Character.UpdateAniamtionAttack(false);
+            }
         }
     }
 }
